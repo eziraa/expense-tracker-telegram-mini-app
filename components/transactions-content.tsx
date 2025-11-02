@@ -9,6 +9,8 @@ import Link from "next/link"
 import { Plus, Trash2, Search, Download } from "lucide-react"
 import { deleteTransaction } from "@/app/actions/transactions"
 import { exportTransactionsCSV } from "@/app/actions/export"
+import DeleteDialog from "./delete-dialog"
+import { toast } from "sonner"
 
 interface Account {
   id: string
@@ -82,6 +84,11 @@ export function TransactionsContent({
     } finally {
       setIsExporting(false)
     }
+  }
+
+  const handleDeleteTransaction = async (transaction?: Transaction) => {
+    if (!transaction) return
+    await handleDelete(transaction.id)
   }
 
   return (
@@ -174,14 +181,29 @@ export function TransactionsContent({
                       >
                         {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(transaction.id)}
-                        disabled={isDeleting === transaction.id}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <DeleteDialog
+                        title="Delete transaction"
+                        open={isDeleting === transaction.id}
+                        onOpenChange={(value) => {
+                          if (!value) {
+                            setIsDeleting(null);
+                          }
+                        }}
+                        trigger={
+                          <Button
+                            onClick={() => setIsDeleting(transaction.id)}
+                            variant="ghost"
+                            size="sm"
+                            disabled={isDeleting === transaction.id}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        }
+                        item={transaction}
+                        onConfirm={handleDeleteTransaction}
+                        itemName={`transaction with id ${transaction.id}`}
+                      />
                     </div>
                   </div>
                 )

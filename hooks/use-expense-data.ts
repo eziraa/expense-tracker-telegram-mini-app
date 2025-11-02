@@ -4,6 +4,15 @@ import { useState, useCallback, useEffect } from "react"
 import { storage } from "@/lib/storage"
 import type { Account, Transaction, Budget, Goal, Category, Tag, User } from "@/lib/types"
 
+export enum TransactionTags {
+  ACCOUNTS = "accounts",
+  TRANSACTIONS = "transactions",
+  BUDGETS = "budgets",
+  GOALS = "goals",
+  CATEGORIES = "categories",
+  USER = "user",
+}
+
 export function useExpenseData() {
   const [accounts, setAccounts] = useState<Account[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -13,6 +22,7 @@ export function useExpenseData() {
   const [tags, setTags] = useState<Tag[]>([])
   const [user, setUser] = useState<User | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [refreshFlag, setRefreshFlag] = useState<TransactionTags | null>(null)
 
   // Initialize data from storage
   useEffect(() => {
