@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAuth } from "@/providers/auth.privider"
 import {
   BarChart,
   Bar,
@@ -45,6 +46,7 @@ export function AnalyticsContent({
   categories: Category[]
   accounts: Account[]
 }) {
+  const userProfile = useAuth().user?.profiles?.[0]
   // Category breakdown
   const categoryData = categories.map((cat) => ({
     name: cat.name,
@@ -58,7 +60,7 @@ export function AnalyticsContent({
   transactions
     .filter((t) => t.type === "expense")
     .forEach((t) => {
-      const date = new Date(t.date).toLocaleDateString()
+      const date = new Date(t.date).toDateString()
       dailyData[date] = (dailyData[date] || 0) + t.amount
     })
 
@@ -92,7 +94,7 @@ export function AnalyticsContent({
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Income</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-600">${totalIncome.toFixed(2)}</div>
+            <div className="text-3xl font-bold text-green-600">{totalIncome.toFixed(2)} {userProfile?.currency ?? 'ETB'}</div>
           </CardContent>
         </Card>
         <Card>
@@ -100,7 +102,7 @@ export function AnalyticsContent({
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-red-600">${totalExpenses.toFixed(2)}</div>
+            <div className="text-3xl font-bold text-red-600">{totalExpenses.toFixed(2)} {userProfile?.currency ?? 'ETB'}</div>
           </CardContent>
         </Card>
         <Card>
@@ -109,7 +111,7 @@ export function AnalyticsContent({
           </CardHeader>
           <CardContent>
             <div className={`text-3xl font-bold ${netSavings >= 0 ? "text-green-600" : "text-red-600"}`}>
-              ${netSavings.toFixed(2)}
+              {netSavings.toFixed(2)} {userProfile?.currency ?? 'ETB'}
             </div>
           </CardContent>
         </Card>
@@ -131,7 +133,7 @@ export function AnalyticsContent({
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value }) => `${name}: $${(value as unknown as number).toFixed(0)}`}
+                    label={({ name, value }) => `${name}: ${(value as unknown as number).toFixed(0)} ${userProfile?.currency ?? 'ETB'}`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -140,7 +142,7 @@ export function AnalyticsContent({
                       <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
+                  <Tooltip formatter={(value) => `${(value as unknown as number).toFixed(2)} ${userProfile?.currency ?? 'ETB'}`} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -161,7 +163,7 @@ export function AnalyticsContent({
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
+                  <Tooltip formatter={(value) => `${(value as unknown as number).toFixed(2)} ${userProfile?.currency ?? 'ETB'}`} />
                   <Bar dataKey="balance" fill="#3b82f6" />
                 </BarChart>
               </ResponsiveContainer>
@@ -183,7 +185,7 @@ export function AnalyticsContent({
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip formatter={(value) => `$${(value as unknown as number).toFixed(2)}`} />
+                  <Tooltip formatter={(value) => `${(value as unknown as number).toFixed(2)} ${userProfile?.currency ?? 'ETB'}`} />
                   <Line type="monotone" dataKey="amount" stroke="#ef4444" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>

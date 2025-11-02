@@ -19,6 +19,7 @@ import {
 } from "recharts"
 import { StatCard } from "./stat-card"
 import { AnimatedCounter } from "./animated-counter"
+import { useAuth } from "@/providers/auth.privider"
 
 interface Account {
   id: string
@@ -46,6 +47,7 @@ interface Category {
   color: string
 }
 
+
 export function DashboardContent({
   accounts,
   transactions,
@@ -55,9 +57,11 @@ export function DashboardContent({
   transactions: Transaction[]
   categories: Category[]
 }) {
+  const userProfile = useAuth().user?.profiles?.[0]
   const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0)
   const totalIncome = transactions.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0)
+
 
   const categoryData = categories
     .map((cat) => ({
@@ -95,7 +99,7 @@ export function DashboardContent({
         </div>
         <div className="relative">
           <p className="text-sm text-muted-foreground mb-2">Welcome back! Here's your financial overview</p>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+          <h1 className="text-lg  font-semibold text-foreground">
             Your Total Balance:{" "}
             <span className="text-accent">
               <AnimatedCounter value={totalBalance} duration={1000} decimals={2} />
@@ -162,7 +166,7 @@ export function DashboardContent({
             >
               <div className="absolute inset-0 bg-linear-to-br from-accent/0 via-accent/5 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              <CardHeader className="pb-3 relative">
+              <CardHeader className=" relative">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg group-hover:text-accent transition-colors duration-300 font-semibold">
@@ -222,7 +226,7 @@ export function DashboardContent({
                       border: "2px solid var(--accent)",
                       borderRadius: "8px",
                     }}
-                    formatter={(value) => [`$${(+value).toFixed(2)}`, "Spending"]}
+                    formatter={(value) => [`${(+value).toFixed(2)} ${userProfile?.currency || 'ETB'}`, "Spending"]}
                   />
                   <Bar dataKey="amount" fill="var(--accent)" radius={[8, 8, 0, 0]} isAnimationActive />
                 </BarChart>
@@ -260,7 +264,7 @@ export function DashboardContent({
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value }) => `${name}: $${value.toFixed(0)}`}
+                    label={({ name, value }) => `${name}: ${value.toFixed(0)} ${userProfile?.currency || 'ETB'}`}
                     outerRadius={80}
                     fill="var(--accent)"
                     dataKey="value"
@@ -345,7 +349,7 @@ export function DashboardContent({
                     <div
                       className={`font-bold text-sm whitespace-nowrap ml-2 ${transaction.type === "income" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
                     >
-                      {transaction.type === "income" ? "+" : "-"}$
+                      {transaction.type === "income" ? "+" : "-"}
                       <AnimatedCounter value={transaction.amount} duration={400} decimals={2} />
                     </div>
                   </div>

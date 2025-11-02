@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Transaction, Category } from "@/lib/types"
-import { formatCurrency } from "@/lib/utils"
+import { useAuth } from "@/providers/auth.privider"
 import Link from "next/link"
 
 interface RecentTransactionsProps {
@@ -11,6 +11,7 @@ interface RecentTransactionsProps {
 }
 
 export function RecentTransactions({ transactions, categories }: RecentTransactionsProps) {
+  const userProfile = useAuth().user?.profiles?.[0]
   const recent = transactions.slice(0, 5)
 
   return (
@@ -38,12 +39,11 @@ export function RecentTransactions({ transactions, categories }: RecentTransacti
                     </div>
                   </div>
                   <p
-                    className={`text-sm font-semibold ${
-                      transaction.type === "expense" ? "text-red-600" : "text-green-600"
-                    }`}
+                    className={`text-sm font-semibold ${transaction.type === "expense" ? "text-red-600" : "text-green-600"
+                      }`}
                   >
                     {transaction.type === "expense" ? "-" : "+"}
-                    {formatCurrency(transaction.amount, transaction.currency)}
+                    {transaction.amount}{userProfile?.currency ?? 'ETB'}
                   </p>
                 </div>
               )

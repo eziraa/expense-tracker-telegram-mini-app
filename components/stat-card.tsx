@@ -41,7 +41,7 @@ export function StatCard({ title, value, icon, color, delay = 0 }: StatCardProps
         >
             <div className="absolute inset-0 bg-linear-to-br from-transparent via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-0">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-accent transition-colors duration-300">
                         {title}
@@ -54,9 +54,9 @@ export function StatCard({ title, value, icon, color, delay = 0 }: StatCardProps
                 </div>
             </CardHeader>
 
-            <CardContent>
+            <CardContent className=" pt-0">
                 <div
-                    className={`text-4xl font-bold tracking-tight ${textClasses[color]} group-hover:scale-110 transition-transform duration-300 origin-left`}
+                    className={`text-2xl font-bold tracking-tight ${textClasses[color]} group-hover:scale-110 transition-transform duration-300 origin-left`}
                 >
                     <AnimatedCounter value={value} duration={800} decimals={2} />
                 </div>

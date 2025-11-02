@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useAuth } from "@/providers/auth.privider"
+import { use, useEffect, useState } from "react"
 
 interface AnimatedCounterProps {
     value: number
@@ -20,7 +21,9 @@ export function AnimatedCounter({
     isCurrency = true,
 }: AnimatedCounterProps) {
     const [displayValue, setDisplayValue] = useState(0)
+    const userProfile = useAuth().user?.profiles?.[0]
 
+    console.log("@@ User  ", userProfile)
     useEffect(() => {
         let startTime: number
         let animationFrame: number
@@ -46,7 +49,7 @@ export function AnimatedCounter({
             {prefix}
             {displayValue.toFixed(decimals)}
             {suffix}
-            {isCurrency && <span className="text-sm"> ETB</span>}
+            {isCurrency && <span className="text-sm"> {userProfile?.currency ?? 'ETB'}</span>}
         </span>
     )
 }

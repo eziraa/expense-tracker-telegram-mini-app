@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Trash2 } from "lucide-react"
 import { createAccount, deleteAccount } from "@/app/actions/accounts"
 import { AlertCircle } from "lucide-react"
+import { useAuth } from "@/providers/auth.privider"
+import DeleteDialog from "./delete-dialog"
 
 interface Account {
   id: string
@@ -21,6 +23,7 @@ interface Account {
 }
 
 export function AccountsContent({ accounts: initialAccounts, userId }: { accounts: Account[]; userId: string }) {
+  const userProfile = useAuth().user?.profiles?.[0]
   const [accounts, setAccounts] = useState(initialAccounts)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -29,7 +32,7 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
     name: "",
     type: "checking",
     balance: "",
-    currency: "USD",
+    currency: userProfile?.currency || "ETB",
   })
 
   const handleAddAccount = async (e: React.FormEvent) => {
@@ -44,7 +47,7 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
         user_id: userId,
       })
       setAccounts([...accounts, newAccount])
-      setFormData({ name: "", type: "checking", balance: "", currency: "USD" })
+      setFormData({ name: "", type: "checking", balance: "", currency: userProfile?.currency || "ETB" })
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create account")
     } finally {
@@ -74,10 +77,10 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
       </div>
 
       {/* Total Balance */}
-      <Card className="bg-gradient-to-r from-primary/10 to-primary/5">
+      <Card className="bg-linear-to-r from-primary/10 to-primary/5">
         <CardContent className="pt-6">
           <p className="text-sm text-muted-foreground mb-2">Total Balance</p>
-          <p className="text-4xl font-bold">${totalBalance.toFixed(2)}</p>
+          <p className="text-4xl font-bold">{totalBalance.toFixed(2)} {userProfile?.currency || "ETB"}</p>
         </CardContent>
       </Card>
 
@@ -157,17 +160,31 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <p className="text-2xl font-bold">${account.balance.toFixed(2)}</p>
+                        <p className="text-xl font-bold">{account.balance.toFixed(2)}</p>
                         <p className="text-xs text-muted-foreground">{account.currency}</p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteAccount(account.id)}
-                        disabled={isDeleting === account.id}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <DeleteDialog
+                        title="Delete Account"
+                        open={isDeleting === account.id}
+                        onOpenChange={(value) => {
+                          if (!value) {
+                            setIsDeleting(null);
+                          }
+                        }}
+                        trigger={
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsDeleting(account.id)}
+                            disabled={isDeleting === account.id}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        }
+                        onConfirm={() => handleDeleteAccount(account.id)}
+                        item={'account'}
+                        itemName={`account with id ${account.id}`}
+                      />
                     </div>
                   </div>
                 </CardContent>

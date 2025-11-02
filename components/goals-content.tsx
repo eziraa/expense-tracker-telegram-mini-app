@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Plus, Trash2, Target } from "lucide-react"
 import { createGoal, deleteGoal } from "@/app/actions/goals"
 import { AlertCircle } from "lucide-react"
+import { useAuth } from "@/providers/auth.privider"
+import DeleteDialog from "./delete-dialog"
 
 interface Goal {
   id: string
@@ -21,6 +23,7 @@ interface Goal {
 }
 
 export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; userId: string }) {
+  const userProfile = useAuth().user?.profiles?.[0]
   const [goals, setGoals] = useState(initialGoals)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -52,11 +55,11 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
     }
   }
 
-  const handleDeleteGoal = async (id: string) => {
-    setIsDeleting(id)
+  const handleDeleteGoal = async (goal: Goal) => {
+    setIsDeleting(goal.id)
     try {
-      await deleteGoal(id)
-      setGoals(goals.filter((g) => g.id !== id))
+      await deleteGoal(goal.id)
+      setGoals(goals.filter((g) => g.id !== goal.id))
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete goal")
     } finally {
@@ -75,7 +78,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
       </div>
 
       {/* Overall Progress */}
-      <Card className="bg-gradient-to-r from-primary/10 to-primary/5">
+      <Card className="bg-linear-to-r from-primary/10 to-primary/5">
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -91,7 +94,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
               />
             </div>
             <p className="text-sm text-muted-foreground">
-              ${totalProgress.toFixed(2)} / ${totalTarget.toFixed(2)}
+              {totalProgress.toFixed(2)} {userProfile?.currency ?? 'ETB'} / {totalTarget.toFixed(2)} {userProfile?.currency ?? 'ETB'}
             </p>
           </div>
         </CardContent>
@@ -186,19 +189,33 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
                           </p>
                           {goal.category && <p className="text-sm text-muted-foreground">{goal.category}</p>}
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteGoal(goal.id)}
-                          disabled={isDeleting === goal.id}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <DeleteDialog
+                          title="Delete Goal"
+                          open={isDeleting === goal.id}
+                          onOpenChange={(value) => {
+                            if (!value) {
+                              setIsDeleting(null);
+                            }
+                          }}
+                          trigger={
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setIsDeleting(goal.id)}
+                              disabled={isDeleting === goal.id}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          }
+                          onConfirm={() => handleDeleteGoal(goal)}
+                          item={'goal'}
+                          itemName={`goal with id ${goal.id}`}
+                        />
                       </div>
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm text-muted-foreground">
-                            ${goal.current_amount.toFixed(2)} / ${goal.target_amount.toFixed(2)}
+                            {goal.current_amount.toFixed(2)} {userProfile?.currency ?? 'ETB'} / {goal.target_amount.toFixed(2)} {userProfile?.currency ?? 'ETB'}
                           </span>
                           <span className="text-sm font-semibold">{percentage.toFixed(0)}%</span>
                         </div>

@@ -1,6 +1,6 @@
 export type TransactionType = "expense" | "income" | "transfer"
 export type RecurrenceType = "none" | "daily" | "weekly" | "monthly" | "yearly"
-export type Currency = "USD" | "EUR" | "GBP" | "INR" | "JPY" | "AUD" | "CAD"
+export type Currency = "USD" | "EUR" | "GBP" | "INR" | "JPY" | "AUD" | "CAD" | "ETB"
 
 export interface Account {
   id: string

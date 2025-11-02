@@ -11,6 +11,7 @@ import { deleteTransaction } from "@/app/actions/transactions"
 import { exportTransactionsCSV } from "@/app/actions/export"
 import DeleteDialog from "./delete-dialog"
 import { toast } from "sonner"
+import { useAuth } from "@/providers/auth.privider"
 
 interface Account {
   id: string
@@ -43,6 +44,7 @@ export function TransactionsContent({
   categories: Category[]
   accounts: Account[]
 }) {
+  const userProfile = useAuth().user?.profiles?.[0]
   const [transactions, setTransactions] = useState(initialTransactions)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState<string>("all")
@@ -179,7 +181,7 @@ export function TransactionsContent({
                       <div
                         className={`font-semibold text-sm whitespace-nowrap ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
                       >
-                        {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}
+                        {transaction.type === "income" ? "+" : "-"}{transaction.amount.toFixed(2)} {userProfile?.currency ?? 'ETB'}
                       </div>
                       <DeleteDialog
                         title="Delete transaction"
