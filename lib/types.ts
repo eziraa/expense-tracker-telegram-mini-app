@@ -37,6 +37,7 @@ export interface Transaction {
   category: string;
   tags: string[]
   account_id: string
+  accountId: string;
   toAccountId?: string
   date: Date
   receipt?: string
