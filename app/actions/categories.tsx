@@ -2,6 +2,12 @@
 
 import { createClient } from "@/lib/server"
 
+/** 
+ * 
+ * Create a new category
+ * @param data: Category values
+ * @returns category instance
+ */
 export async function createCategory(data: {
     user_id: string
     name: string
@@ -20,4 +26,20 @@ export async function createCategory(data: {
     }
 
     return category
+}
+
+/** 
+ * 
+ * Update a category by ID
+ * @param id: Category ID
+ * @param updates: Fields to update
+ */
+
+export async function deleteCategory(id: string) {
+    const client = await createClient()
+    const { error } = await client.from("categories").delete().eq("id", id)
+    if (error) {
+        throw new Error(error.message)
+    }
+    return true
 }

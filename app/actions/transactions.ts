@@ -2,6 +2,12 @@
 
 import { createClient } from "@/lib/server"
 
+/** 
+ *  
+ * Create a new transaction
+ * @param data: Transaction values
+ * @returns transaction instance
+ */
 export async function createTransaction(data: {
   user_id: string
   account_id: string

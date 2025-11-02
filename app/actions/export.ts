@@ -2,6 +2,11 @@
 
 import { createClient } from "@/lib/server"
 
+
+/** *  
+ * Export transactions as CSV
+ * @returns CSV string of transactions
+ */
 export async function exportTransactionsCSV(): Promise<string> {
   const supabase = await createClient()
   const {
@@ -34,3 +39,5 @@ export async function exportTransactionsCSV(): Promise<string> {
 
   return csv
 }
+
+

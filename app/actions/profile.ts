@@ -2,6 +2,10 @@
 
 import { createClient } from "@/lib/server"
 
+/**
+ * Update a user profile
+ * @param data: Profile values
+ */
 export async function updateProfile(data: {
   id: string
   display_name: string
