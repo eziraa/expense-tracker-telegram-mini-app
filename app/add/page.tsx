@@ -55,6 +55,9 @@ export default function AddTransaction() {
       date: new Date(date),
       notes,
       createdAt: new Date(),
+      account_id: accountId,
+      user_id: "", // to be set in backend
+      category_id: type === "transfer" ? "" : category,
     }
 
     addTransaction(newTransaction)
@@ -89,11 +92,10 @@ export default function AddTransaction() {
                       key={t}
                       type="button"
                       onClick={() => setType(t)}
-                      className={`py-2 px-3 rounded-lg font-medium transition-colors capitalize ${
-                        type === t
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:bg-muted/80"
-                      }`}
+                      className={`py-2 px-3 rounded-lg font-medium transition-colors capitalize ${type === t
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                        }`}
                     >
                       {t}
                     </button>
