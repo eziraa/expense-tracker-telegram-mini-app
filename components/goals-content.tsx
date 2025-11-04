@@ -79,7 +79,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
       </div>
 
       {/* Overall Progress */}
-      <Card className="bg-linear-to-tr from-blue-600/20 via-white to-blue-600/30">
+      <Card className="bg-linear-to-tr from-blue-600/20 via-white dark:via-black to-blue-600/30 ">
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { createTransaction, updateTransaction } from "@/app/actions/transactions"
-import { AlertCircle, Plus, Upload } from "lucide-react"
+import { AlertCircle, Loader2Icon, Plus, Upload } from "lucide-react"
 import AddCategoryDialog from "./add-category"
 import { uploadFileToSupabase } from "@/app/actions/files"
 import { Transaction, TransactionType } from "@/lib/types"
@@ -38,7 +38,7 @@ export function EditTransactionContent({
   userId: string
 }) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
   const [open, setOpen] = useState(false)
@@ -60,7 +60,7 @@ export function EditTransactionContent({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setIsSaving(true)
     setError(null)
 
     try {
@@ -90,7 +90,7 @@ export function EditTransactionContent({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create transaction")
     } finally {
-      setIsLoading(false)
+      setIsSaving(false)
     }
   }
 
@@ -138,7 +138,7 @@ export function EditTransactionContent({
                 required
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
 
@@ -151,7 +151,7 @@ export function EditTransactionContent({
                 required
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
 
@@ -164,7 +164,7 @@ export function EditTransactionContent({
                 required
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
 
@@ -208,7 +208,7 @@ export function EditTransactionContent({
                     ))}
                   </SelectContent>
                 </Select>
-                <Button className="gap-2" onClick={(e) => { e.preventDefault(); setOpen(true); }}><Plus className="w-4 h-4" /> Edit Category</Button>
+                <Button className="gap-2" onClick={(e) => { e.preventDefault(); setOpen(true); }}><Plus className="w-4 h-4" /> Add Category</Button>
               </div>
 
             </div>
@@ -221,7 +221,7 @@ export function EditTransactionContent({
                 placeholder="e.g., groceries, weekly, important"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
 
@@ -234,7 +234,7 @@ export function EditTransactionContent({
                   type="file"
                   accept="image/*,.pdf"
                   onChange={handleFileChange}
-                  disabled={isLoading}
+                  disabled={isSaving}
                   className="hidden"
                 />
                 <label htmlFor="receipt" className="cursor-pointer">
@@ -252,8 +252,16 @@ export function EditTransactionContent({
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Editing..." : "Edit Transaction"}
+            <Button type="submit" className="w-full flex items-center space-x-0.5 text-white" disabled={isSaving}>
+              {
+                isSaving ? (
+                  <>
+                    <Loader2Icon className="animate-spin text-white" /> transaction
+                  </>
+                ) : (
+                  'Save transaction'
+                )
+              }
             </Button>
           </form>
         </CardContent>

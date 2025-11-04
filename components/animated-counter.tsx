@@ -23,7 +23,6 @@ export function AnimatedCounter({
     const [displayValue, setDisplayValue] = useState(0)
     const userProfile = useAuth().user?.profiles?.[0]
 
-    console.log("@@ User  ", userProfile)
     useEffect(() => {
         let startTime: number
         let animationFrame: number

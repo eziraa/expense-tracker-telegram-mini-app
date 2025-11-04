@@ -23,7 +23,7 @@ interface Profile {
 
 export function SettingsContent({ profile, userId }: { profile: Profile | null; userId: string }) {
   const { refresh, user } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [currency, setCurrency] = useState("")
@@ -38,7 +38,7 @@ export function SettingsContent({ profile, userId }: { profile: Profile | null; 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setIsSaving(true)
     setError(null)
     setSuccess(false)
 
@@ -54,14 +54,14 @@ export function SettingsContent({ profile, userId }: { profile: Profile | null; 
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update profile")
     } finally {
-      setIsLoading(false)
+      setIsSaving(false)
     }
   }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Settings</h1>
+        <h1 className="text-xl font-bold">Settings</h1>
         <p className="text-muted-foreground">Manage your account preferences</p>
       </div>
 
@@ -86,7 +86,7 @@ export function SettingsContent({ profile, userId }: { profile: Profile | null; 
                 placeholder="Your name"
                 value={formData.display_name}
                 onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
 
@@ -112,8 +112,8 @@ export function SettingsContent({ profile, userId }: { profile: Profile | null; 
               </div>
             )}
 
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save Changes"}
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           </form>
         </CardContent>

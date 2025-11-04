@@ -29,7 +29,7 @@ interface EditGoalProps {
 
 export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
     const [open, setOpen] = useState(false)
-    const [isUpdating, setIsUpdating] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         name: goal.name || "",
@@ -51,7 +51,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
     }, [goal])
     const handleAddGoal = async (e: React.FormEvent) => {
         e.preventDefault()
-        setIsUpdating(true)
+        setIsSaving(true)
         setError(null)
 
         try {
@@ -70,7 +70,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
             toast.error(err instanceof Error ? err.message : "Failed to update goal")
             setError(err instanceof Error ? err.message : "Failed to create goal")
         } finally {
-            setIsUpdating(false)
+            setIsSaving(false)
         }
     }
 
@@ -97,7 +97,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
                                     placeholder="e.g., Emergency Fund"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    disabled={isUpdating}
+                                    disabled={isSaving}
                                     required
                                 />
                             </div>
@@ -110,7 +110,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
                                     placeholder="0.00"
                                     value={formData.target_amount}
                                     onChange={(e) => setFormData({ ...formData, target_amount: e.target.value })}
-                                    disabled={isUpdating}
+                                    disabled={isSaving}
                                     required
                                 />
                             </div>
@@ -123,7 +123,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
                                     placeholder="0.00"
                                     value={formData.current_amount}
                                     onChange={(e) => setFormData({ ...formData, current_amount: e.target.value })}
-                                    disabled={isUpdating}
+                                    disabled={isSaving}
                                     required
                                 />
                             </div>
@@ -134,7 +134,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
                                     type="date"
                                     value={formData.deadline}
                                     onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                                    disabled={isUpdating}
+                                    disabled={isSaving}
                                 />
                             </div>
                             <div className="space-y-2">
@@ -144,7 +144,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
                                     placeholder="e.g., Savings"
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    disabled={isUpdating}
+                                    disabled={isSaving}
                                 />
                             </div>
                             {error && (
@@ -153,9 +153,9 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
                                     {error}
                                 </div>
                             )}
-                            <Button type="submit" className="w-full" disabled={isUpdating}>
+                            <Button type="submit" className="w-full" disabled={isSaving}>
                                 {
-                                    isUpdating ? (
+                                    isSaving ? (
                                         <>
                                             <Loader2Icon className="h-4 w-4 text-accent animate-spin mr-1" />
                                             Saving...

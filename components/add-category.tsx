@@ -42,7 +42,7 @@ type CategoryFormValues = z.infer<typeof categorySchema>;
 export default function AddCategoryDialog({ userId, open, setOpen }: { userId: string, open: boolean, setOpen: (open: boolean) => void }) {
 
     const [color, setColor] = React.useState("#6b7280");
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [isAdding, setIsAdding] = React.useState(false);
 
     const form = useForm<CategoryFormValues>({
         resolver: zodResolver(categorySchema),
@@ -56,7 +56,7 @@ export default function AddCategoryDialog({ userId, open, setOpen }: { userId: s
 
 
     const handleAdd = async (data: CategoryFormValues) => {
-        setIsLoading(true)
+        setIsAdding(true)
 
         try {
 
@@ -73,7 +73,7 @@ export default function AddCategoryDialog({ userId, open, setOpen }: { userId: s
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Failed to create transaction")
         } finally {
-            setIsLoading(false)
+            setIsAdding(false)
         }
     }
 
@@ -164,9 +164,9 @@ export default function AddCategoryDialog({ userId, open, setOpen }: { userId: s
                                 </div>
 
                                 <DialogFooter className="mt-6">
-                                    <Button disabled={isLoading} type="submit" className="w-1/2 bg-primary text-white">
+                                    <Button disabled={isAdding} type="submit" className="w-1/2 flex items-center space-x-0.5 bg-primary text-white">
                                         {
-                                            isLoading ? (
+                                            isAdding ? (
                                                 <>
                                                     <Loader2Icon className=" animate-spin text-accent" />
                                                     Saving

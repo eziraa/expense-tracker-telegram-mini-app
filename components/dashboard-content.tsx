@@ -202,7 +202,7 @@ export function DashboardContent({
       >
         {/* Daily Spending Chart */}
         <Card className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           <CardHeader className="relative pb-6">
             <div className="flex items-center justify-between">
@@ -251,7 +251,7 @@ export function DashboardContent({
 
         {/* Category Breakdown Chart */}
         <Card className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           <CardHeader className="relative pb-6">
             <div className="flex items-center justify-between">
@@ -274,11 +274,15 @@ export function DashboardContent({
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value }) => `${name}: ${value.toFixed(0)}`}
+                    label={({ name, value }) => `${value.toFixed(0)} ${userProfile?.currency || "ETB"}`}
                     outerRadius={90}
                     fill="var(--accent)"
                     dataKey="value"
                     animationDuration={800}
+                    style={{
+                      fontSize: "10px"
+                    }}
+
                   >
                     {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -292,8 +296,18 @@ export function DashboardContent({
                       borderRadius: "12px",
                       boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
                     }}
+                    itemStyle={{
+                      color: "var(--text-forground)"
+                    }}
                   />
-                  <Legend verticalAlign="bottom" height={36} />
+                  <Legend
+                    align="left"
+                    style={{
+                      fontSize: "10px"
+                    }}
+                    verticalAlign="bottom"
+                    height={36}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -309,7 +323,7 @@ export function DashboardContent({
         className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10"
         style={{ animation: "fade-in-up 0.6s ease-out 0.4s both" }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <CardHeader className="relative pb-6">
           <div className="flex items-center justify-between">
@@ -394,12 +408,12 @@ export function DashboardContent({
       {/* Desktop Add Button */}
       <div className="hidden md:block animate-slide-up" style={{ animationDelay: "500ms" }}>
         <Link href="/dashboard/add">
-          <Button className="w-full bg-linear-to-r from-accent via-accent/90 to-accent/80 hover:shadow-2xl hover:scale-105 text-accent-foreground font-semibold py-7 text-lg transition-all duration-300 group">
+          <Button size={"default"} className="w-full bg-linear-to-r from-accent via-accent/90 to-accent/80 hover:shadow-2xl hover:scale-[102%] text-accent-foreground font-semibold py-4 text-balance transition-all duration-300 group">
             <Plus className="h-5 w-5 mr-3 group-hover:rotate-90 transition-transform duration-300" />
             Add New Transaction
           </Button>
         </Link>
       </div>
-    </div>
+    </div >
   )
 }

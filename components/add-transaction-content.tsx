@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { createTransaction } from "@/app/actions/transactions"
-import { AlertCircle, Plus, Upload } from "lucide-react"
+import { AlertCircle, Loader2Icon, Plus, Upload } from "lucide-react"
 import AddCategoryDialog from "./add-category"
 import { uploadFileToSupabase } from "@/app/actions/files"
 
@@ -35,7 +35,7 @@ export function AddTransactionContent({
   userId: string
 }) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isAdding, setIsAdding] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
   const [open, setOpen] = useState(false)
@@ -57,7 +57,7 @@ export function AddTransactionContent({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setIsAdding(true)
     setError(null)
 
     try {
@@ -83,7 +83,7 @@ export function AddTransactionContent({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create transaction")
     } finally {
-      setIsLoading(false)
+      setIsAdding(false)
     }
   }
 
@@ -131,7 +131,7 @@ export function AddTransactionContent({
                 required
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                disabled={isLoading}
+                disabled={isAdding}
               />
             </div>
 
@@ -144,7 +144,7 @@ export function AddTransactionContent({
                 required
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                disabled={isLoading}
+                disabled={isAdding}
               />
             </div>
 
@@ -157,7 +157,7 @@ export function AddTransactionContent({
                 required
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                disabled={isLoading}
+                disabled={isAdding}
               />
             </div>
 
@@ -211,7 +211,7 @@ export function AddTransactionContent({
                 placeholder="e.g., groceries, weekly, important"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                disabled={isLoading}
+                disabled={isAdding}
               />
             </div>
 
@@ -224,7 +224,7 @@ export function AddTransactionContent({
                   type="file"
                   accept="image/*,.pdf"
                   onChange={handleFileChange}
-                  disabled={isLoading}
+                  disabled={isAdding}
                   className="hidden"
                 />
                 <label htmlFor="receipt" className="cursor-pointer">
@@ -242,8 +242,16 @@ export function AddTransactionContent({
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Adding..." : "Add Transaction"}
+            <Button type="submit" className="w-full flex items-center space-x-0.5 text-white" disabled={isAdding}>
+              {
+                isAdding ? (
+                  <>
+                    <Loader2Icon className="animate-spin text-white" /> Adding... transaction
+                  </>
+                ) : (
+                  'Add Transaction'
+                )
+              }
             </Button>
           </form>
         </CardContent>

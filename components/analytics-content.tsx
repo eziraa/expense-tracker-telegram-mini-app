@@ -15,6 +15,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts"
 import { TrendingUp, TrendingDown, Wallet, PieChartIcon } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -94,12 +95,12 @@ export function AnalyticsContent({
   const colors = ["#06b6d4", "#0ea5e9", "#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#ef4444"]
 
   return (
-    <div className="min-h-screen bg-background p-6 lg:p-8">
+    <div className="min-h-screen bg-background p-1 lg:p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         <div
           className={`transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
-          <h1 className="text-2xl md:text-5xl font-bold bg-linear-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-xl md:text-3xl font-bold bg-linear-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
             Expense Analytics
           </h1>
           <p className="text-muted-foreground text-md mt-2">Track your spending patterns and financial insights</p>
@@ -195,10 +196,13 @@ export function AnalyticsContent({
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, value }) => `${name}: ${(value as number).toFixed(0)}`}
+                        label={({ name, value }) => ` ${(value as number).toFixed(0)} ${userProfile?.currency ?? "ETB"}`}
                         outerRadius={90}
                         fill="#06b6d4"
                         dataKey="value"
+                        style={{
+                          fontSize: "10px"
+                        }}
                         animationBegin={0}
                         animationDuration={800}
                         animationEasing="ease-out"
@@ -219,6 +223,7 @@ export function AnalyticsContent({
                           color: "var(--foreground)",
                         }}
                       />
+                      <Legend align="left" verticalAlign="bottom" style={{ fontSize: "10px" }} />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
@@ -247,7 +252,7 @@ export function AnalyticsContent({
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={accountData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="name" stroke="var(--muted-foreground)" />
+                      <XAxis style={{ fontSize: "10px" }} dataKey="name" stroke="var(--muted-foreground)" />
                       <YAxis stroke="var(--muted-foreground)" />
                       <Tooltip
                         formatter={(value) => `${(value as number).toFixed(2)} ${userProfile?.currency ?? "ETB"}`}
