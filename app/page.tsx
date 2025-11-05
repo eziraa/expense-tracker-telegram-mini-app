@@ -1,15 +1,24 @@
+'use client'
 import { redirect } from "next/navigation"
-import { createClient } from "@/lib/server"
+import { useAuth } from "@/providers/auth.privider"
+import { Loader2Icon } from "lucide-react"
 
 export default async function Home() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { user, loading } = useAuth()
 
-  if (user) {
-    redirect("/dashboard")
+  if (loading) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center flex-col space-y-4">
+        <Loader2Icon className=" animate-spin text-accent" />
+      </div>
+    )
+
   }
 
-  redirect("/auth/login")
+  if (!user && !loading) {
+    redirect("/auth/login")
+  }
+
+  redirect("/dashboard")
+
 }
