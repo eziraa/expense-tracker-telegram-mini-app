@@ -396,7 +396,7 @@ export function DashboardContent({
         </CardContent>
       </Card>
 
-      <div className="md:hidden fixed bottom-10 right-4 animate-slide-in-up">
+      <div className="md:hidden fixed bottom-6 right-4 animate-slide-in-up">
         <Link href="/dashboard/add">
           <Button className="bg-linear-to-br from-accent to-accent/80 hover:shadow-2xl hover:scale-110 text-white font-semibold py-3 px-6 h-fit rounded-full shadow-lg transition-all duration-300 flex items-center gap-2">
             <Plus className="h-6 w-6" />
