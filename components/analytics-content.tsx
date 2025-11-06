@@ -187,7 +187,7 @@ export function AnalyticsContent({
                   Expenses by Category
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6 ">
+              <CardContent className="pt-6 px-2 ">
                 {categoryData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={300} className={' flex justify-end'}>
                     <PieChart>
@@ -247,7 +247,7 @@ export function AnalyticsContent({
                   Account Balances
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="pt-6 px-2">
                 {accountData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={accountData}>
@@ -272,6 +272,7 @@ export function AnalyticsContent({
                         animationDuration={800}
                         animationEasing="ease-out"
                         radius={[8, 8, 0, 0]}
+
                       />
                       <defs>
                         <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
@@ -305,7 +306,7 @@ export function AnalyticsContent({
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="pt-6 px-0 pr-1">
                 {dailyChartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={350}>
                     <LineChart data={dailyChartData}>

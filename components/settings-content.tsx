@@ -7,11 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { updateProfile } from "@/app/actions/profile"
 import { AlertCircle, CheckCircle } from "lucide-react"
 import { CurrencySelector } from "./currency-selector"
-import { toast } from "sonner"
 import { useAuth } from "@/providers/auth.privider"
 
 interface Profile {
@@ -67,11 +65,11 @@ export function SettingsContent({ profile, userId }: { profile: Profile | null; 
 
       {/* Profile Settings */}
       <Card className="border-[0.6px] border-accent/50 shadow-md">
-        <CardHeader>
+        <CardHeader className="px-3">
           <CardTitle>Profile Settings</CardTitle>
           <CardDescription>Update your account information</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -121,10 +119,10 @@ export function SettingsContent({ profile, userId }: { profile: Profile | null; 
 
       {/* About */}
       <Card>
-        <CardHeader>
+        <CardHeader className="px-2">
           <CardTitle>About</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2">
           <p className="text-sm text-muted-foreground">
             Expense Tracker v1.0 - A comprehensive financial management application built with Next.js and Supabase.
           </p>

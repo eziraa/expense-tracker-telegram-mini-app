@@ -72,7 +72,7 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
 
       {/* Total Balance */}
       <Card className="bg-linear-to-r from-primary/10 to-primary/5">
-        <CardContent className="pt-2">
+        <CardContent className="pt-2 px-3">
           <p className="text-sm text-muted-foreground mb-2">Total Balance</p>
           <p className="text-xl font-bold">{totalBalance.toFixed(2)} {userProfile?.currency || "ETB"}</p>
         </CardContent>
@@ -81,13 +81,13 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Add Account Form */}
         <Card className="lg:col-span-1">
-          <CardHeader>
+          <CardHeader className="px-3">
             <CardTitle className="flex items-center gap-2">
               <Plus className="h-5 w-5" />
               New Account
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3">
             <form onSubmit={handleAddAccount} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Account Name</Label>
@@ -146,7 +146,7 @@ export function AccountsContent({ accounts: initialAccounts, userId }: { account
           {accounts.length > 0 ? (
             accounts.map((account) => (
               <Card key={account.id}>
-                <CardContent className="pt-6">
+                <CardContent className="pt-6 px-3">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex items-center justify-between">
                       <div>

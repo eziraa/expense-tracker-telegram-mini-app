@@ -80,7 +80,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
 
       {/* Overall Progress */}
       <Card className="bg-linear-to-tr from-blue-600/20 via-white dark:via-black to-blue-600/30 ">
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 px-3">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">Overall Progress</p>
@@ -103,14 +103,14 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Add Goal Form */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
+        <Card className="lg:col-span-1 ">
+          <CardHeader className="px-3">
             <CardTitle className="flex items-center gap-2">
               <Plus className="h-5 w-5" />
               New Goal
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3">
             <form onSubmit={handleAddGoal} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Goal Name</Label>
@@ -180,7 +180,7 @@ export function GoalsContent({ goals: initialGoals, userId }: { goals: Goal[]; u
 
               return (
                 <Card key={goal.id}>
-                  <CardContent className="pt-6">
+                  <CardContent className="pt-6 px-3">
                     <div className="space-y-4">
                       <div className="flex items-start justify-between">
                         <div>

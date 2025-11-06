@@ -115,7 +115,7 @@ export function TransactionsContent({
 
       {/* Filters */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 px-2">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -144,12 +144,12 @@ export function TransactionsContent({
       </Card>
 
       {/* Transactions List */}
-      <Card>
-        <CardHeader>
+      <Card className="px-1 pb-1">
+        <CardHeader className="px-2">
           <CardTitle>All Transactions</CardTitle>
           <CardDescription>{filteredTransactions.length} transactions</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-1 pb-1">
           <div className="space-y-2">
             {filteredTransactions.length > 0 ? (
               filteredTransactions.map((transaction) => {
