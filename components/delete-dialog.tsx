@@ -105,14 +105,16 @@ export default function DeleteDialog<T = unknown>({
                 </AlertDialogHeader>
                 <AlertDialogFooter className="flex flex-row gap-2.5 justify-end">
                     <AlertDialogCancel asChild>
-                        <Button variant="ghost">{cancelLabel}</Button>
+                        <Button variant="ghost" size={'sm'} className="text-sm">{cancelLabel}</Button>
                     </AlertDialogCancel>
                     <AlertDialogAction asChild>
                         <Button
+                            size={"sm"}
                             variant="destructive"
                             onClick={handleConfirm}
                             disabled={isDeleting}
-                            className="bg-destructive"
+                            className="bg-destructive text-sm text-white hover:bg-destructive/90"
+
                         >
                             {isDeleting ? "Deleting..." : (
                                 <>
