@@ -169,11 +169,11 @@ export default function AddCategoryDialog({ userId, open, setOpen }: { userId: s
                                             isAdding ? (
                                                 <>
                                                     <Loader2Icon className=" animate-spin text-accent" />
-                                                    Saving
+                                                    Adding
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Tag className="w-4 h-4 mr-2" /> Save Category
+                                                    <Tag className="w-4 h-4 mr-2" /> Add Category
                                                 </>
                                             )
 

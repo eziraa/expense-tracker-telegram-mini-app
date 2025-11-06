@@ -122,7 +122,7 @@ export default function EditAccountDialog({
                         {isSaving ? (
                             <>
                                 <Loader2Icon className="animate-spin text-white" />
-                                Saving
+                                Saving account
                             </>
                         ) : (
                             'Save account'

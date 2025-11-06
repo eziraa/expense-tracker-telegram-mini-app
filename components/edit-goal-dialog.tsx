@@ -158,7 +158,7 @@ export function EditGoalDialog({ goal, onSuccess }: EditGoalProps) {
                                     isSaving ? (
                                         <>
                                             <Loader2Icon className="h-4 w-4 text-accent animate-spin mr-1" />
-                                            Saving...
+                                            Saving... goal
                                         </>
                                     ) : (
                                         "Save Goal"

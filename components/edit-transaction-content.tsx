@@ -256,7 +256,7 @@ export function EditTransactionContent({
               {
                 isSaving ? (
                   <>
-                    <Loader2Icon className="animate-spin text-white" /> transaction
+                    <Loader2Icon className="animate-spin text-white" />Saving transaction
                   </>
                 ) : (
                   'Save transaction'
