@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/server"
+import { apiClient } from "@/lib/api-client"
+import { cookies } from "next/headers"
 
 /** 
  * 
@@ -15,31 +16,34 @@ export async function createCategory(data: {
     icon?: string
     color?: string
 }) {
-    const client = await createClient()
-    const { data: category, error } = await client
-        .from("categories")
-        .insert([data])
-        .single()
-
-    if (error) {
-        throw new Error(error.message)
+    const cookieStore = await cookies()
+    const token = cookieStore.get("auth_token")?.value
+    
+    if (!token) {
+        throw new Error("Not authenticated")
     }
 
-    return category
+    apiClient.setToken(token)
+
+    const { user_id, ...categoryData } = data
+    return apiClient.post("/api/categories/", categoryData)
 }
 
 /** 
  * 
- * Update a category by ID
+ * Delete a category by ID
  * @param id: Category ID
- * @param updates: Fields to update
  */
 
 export async function deleteCategory(id: string) {
-    const client = await createClient()
-    const { error } = await client.from("categories").delete().eq("id", id)
-    if (error) {
-        throw new Error(error.message)
+    const cookieStore = await cookies()
+    const token = cookieStore.get("auth_token")?.value
+    
+    if (!token) {
+        throw new Error("Not authenticated")
     }
+
+    apiClient.setToken(token)
+    await apiClient.delete(`/api/categories/${id}`)
     return true
 }

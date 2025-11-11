@@ -1,22 +1,40 @@
-import { createClient } from "@/lib/server"
+import { cookies } from "next/headers"
+import { apiClient } from "@/lib/api-client"
 import { AddTransactionContent } from "@/components/add-transaction-content"
+import { redirect } from "next/navigation"
+import { getLoggedInUser } from "@/app/actions/auth"
 
 export default async function AddTransactionPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
 
-  if (!user) {
-    return null
+  if (!token) {
+    redirect("/auth/login")
   }
 
-  const [accountsData, categoriesData] = await Promise.all([
-    supabase.from("accounts").select("*").eq("user_id", user.id),
-    supabase.from("categories").select("*").eq("user_id", user.id),
-  ])
+  apiClient.setToken(token)
 
-  return (
-    <AddTransactionContent accounts={accountsData.data || []} categories={categoriesData.data || []} userId={user.id} />
-  )
+  try {
+    const user = await getLoggedInUser()
+    const [accounts, categories] = await Promise.all([
+      apiClient.get("/api/accounts/"),
+      apiClient.get("/api/categories/"),
+    ])
+
+    return (
+      <AddTransactionContent 
+        accounts={accounts as any[]} 
+        categories={categories as any[]} 
+        userId={user.id} 
+      />
+    )
+  } catch (error: any) {
+    // If it's an authentication error, clear token and redirect
+    if (error?.message?.includes("401") || error?.message?.includes("Unauthorized") || error?.message?.includes("Not authenticated")) {
+      cookieStore.delete("auth_token")
+      redirect("/auth/login")
+    }
+    // For other errors, redirect to transactions page
+    redirect("/dashboard/transactions")
+  }
 }

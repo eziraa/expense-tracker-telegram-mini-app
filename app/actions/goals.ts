@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/server"
+import { apiClient } from "@/lib/api-client"
+import { cookies } from "next/headers"
 
 /**
  * 
@@ -15,13 +16,19 @@ export async function createGoal(data: {
   deadline: string
   category: string
 }) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: goal, error } = await supabase.from("goals").insert([data]).select().single()
+  apiClient.setToken(token)
 
-  if (error) throw new Error(error.message)
-  return goal
+  const { user_id, ...goalData } = data
+  return apiClient.post("/api/goals/", goalData)
 }
+
 /** 
  * 
  * Delete a goal by ID
@@ -29,11 +36,15 @@ export async function createGoal(data: {
  */
 
 export async function deleteGoal(id: string) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { error } = await supabase.from("goals").delete().eq("id", id)
-
-  if (error) throw new Error(error.message)
+  apiClient.setToken(token)
+  await apiClient.delete(`/api/goals/${id}`)
 }
 
 /**
@@ -49,12 +60,15 @@ export async function updateGoal(id: string, data: {
   name?: string
   category?: string
 }) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { error, data: updatedGoal } = await supabase.from("goals").update(data).eq("id", id)
-
-  if (error) throw new Error(error.message)
-  return updatedGoal
+  apiClient.setToken(token)
+  return apiClient.patch(`/api/goals/${id}`, data)
 }
 
 /**
@@ -64,9 +78,13 @@ export async function updateGoal(id: string, data: {
  * @returns Array of goal instances
  */
 export async function getGoalsByUserId(userId: string) {
-  const supabase = await createClient()
-  const { data: goals, error } = await supabase.from("goals").select().eq("user_id", userId)
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  if (error) throw new Error(error.message)
-  return goals
+  apiClient.setToken(token)
+  return apiClient.get("/api/goals/")
 }

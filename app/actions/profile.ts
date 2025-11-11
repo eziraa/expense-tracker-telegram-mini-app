@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/server"
+import { apiClient } from "@/lib/api-client"
+import { cookies } from "next/headers"
 
 /**
  * Update a user profile
@@ -11,14 +12,17 @@ export async function updateProfile(data: {
   display_name: string
   currency: string
 }) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { error } = await supabase
-    .from("profiles")
-    .update({ display_name: data.display_name, currency: data.currency })
-    .eq("id", data.id)
+  apiClient.setToken(token)
 
-  if (error) throw new Error(error.message)
+  const { id, ...profileData } = data
+  await apiClient.patch("/api/profile/", profileData)
 }
 
 /**
@@ -28,10 +32,22 @@ export async function updateProfile(data: {
  */
 
 export async function getUserProfiles(userId: string) {
-  const supabase = await createClient()
-  const { data, error } = await supabase.from("profiles").select('*').eq("id", userId)
-  if (error) throw new Error(error.message)
-  return data as {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
+
+  apiClient.setToken(token)
+  const profile = await apiClient.get<{
+    id: string;
+    email: string;
+    display_name: string | null;
+    currency: string;
+  }>("/api/profile/")
+  
+  return [profile] as {
     display_name: string;
     email: string;
     currency: string

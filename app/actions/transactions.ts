@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/server"
+import { apiClient } from "@/lib/api-client"
+import { cookies } from "next/headers"
 
 /** 
  *  
@@ -19,31 +20,40 @@ export async function createTransaction(data: {
   receipt_url?: string
   tags?: string[]
 }) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: transaction, error } = await supabase.from("transactions").insert([data]).select().single()
+  apiClient.setToken(token)
 
-  if (error) throw new Error(error.message)
-  return transaction
+  const { user_id, ...transactionData } = data
+  return apiClient.post("/api/transactions/", transactionData)
 }
 
+/**
+ * 
+ * Delete an existing transaction
+ * @param id: Transaction ID
+ */
+export async function deleteTransaction(id: string) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
+
+  apiClient.setToken(token)
+  await apiClient.delete(`/api/transactions/${id}`)
+}
 
 /**
  * 
  * Update an existing transaction
  * @param id: Transaction ID
- */
-export async function deleteTransaction(id: string) {
-  const supabase = await createClient()
-
-  const { error } = await supabase.from("transactions").delete().eq("id", id)
-
-  if (error) throw new Error(error.message)
-}
-
-/**
- * 
- * Update an existing transaction
  * @param data: Transaction values
  * @returns updated transaction instance
  */
@@ -59,15 +69,15 @@ export async function updateTransaction(id: string, data: {
   receipt_url?: string
   tags?: string[]
 }) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: transaction, error } = await supabase
-    .from("transactions")
-    .update(data)
-    .eq("id", data.id)
-    .select()
-    .single()
+  apiClient.setToken(token)
 
-  if (error) throw new Error(error.message)
-  return transaction
+  const { id: _, user_id, ...updateData } = data
+  return apiClient.patch(`/api/transactions/${id}`, updateData)
 }

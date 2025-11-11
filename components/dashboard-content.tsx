@@ -94,7 +94,7 @@ export function DashboardContent({
   return (
     <div className="space-y-8 pb-24 md:pb-8">
       <div className="relative overflow-hidden shadow-2xl rounded-2xl bg-linear-to-br from-accent/20 via-accent/10 to-transparent border-[0.6px] border-accent/50 p-6 md:p-8 animate-fade-in">
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
           <div className="absolute top-0 right-0 w-72 h-72 bg-accent/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         </div>
         <div className="relative">
@@ -164,7 +164,7 @@ export function DashboardContent({
               className="overflow-hidden animate-scale-in shadow-lg border border-accent/50 transition-all duration-300 cursor-pointer group bg-linear-to-br from-card/50 to-card "
               style={{ animationDelay: `${idx * 50 + 200}ms` }}
             >
-              <div className="absolute inset-0 bg-linear-to-br from-accent/0 via-accent/5 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-br from-accent/0 via-accent/5 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
               <CardHeader className=" relative">
                 <div className="flex items-center justify-between">
@@ -202,7 +202,7 @@ export function DashboardContent({
       >
         {/* Daily Spending Chart */}
         <Card className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10">
-          <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
           <CardHeader className="relative pb-6">
             <div className="flex items-center justify-between">
@@ -251,7 +251,7 @@ export function DashboardContent({
 
         {/* Category Breakdown Chart */}
         <Card className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10">
-          <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
           <CardHeader className="relative pb-6">
             <div className="flex items-center justify-between">
@@ -323,7 +323,7 @@ export function DashboardContent({
         className="shadow-md border-accent/40 transition-all duration-300 overflow-hidden group hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10"
         style={{ animation: "fade-in-up 0.6s ease-out 0.4s both" }}
       >
-        <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-linear-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
         <CardHeader className="relative pb-6">
           <div className="flex items-center justify-between">

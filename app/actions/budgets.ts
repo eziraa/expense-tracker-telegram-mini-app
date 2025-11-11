@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/server"
+import { apiClient } from "@/lib/api-client"
+import { cookies } from "next/headers"
 
 /** 
  * 
@@ -14,12 +15,17 @@ export async function createBudget(data: {
   limit_amount: number
   period: string
 }) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: budget, error } = await supabase.from("budgets").insert([data]).select().single()
+  apiClient.setToken(token)
 
-  if (error) throw new Error(error.message)
-  return budget
+  const { user_id, ...budgetData } = data
+  return apiClient.post("/api/budgets/", budgetData)
 }
 
 /** 
@@ -28,13 +34,16 @@ export async function createBudget(data: {
  * @param id: Budget ID
  */
 export async function deleteBudget(id: string) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { error } = await supabase.from("budgets").delete().eq("id", id)
-
-  if (error) throw new Error(error.message)
+  apiClient.setToken(token)
+  await apiClient.delete(`/api/budgets/${id}`)
 }
-
 
 /** 
  * Update a budget by ID
@@ -46,12 +55,15 @@ export async function updateBudget(id: string, updates: Partial<{
   limit_amount: number
   period: string
 }>) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: budget, error } = await supabase.from("budgets").update(updates).eq("id", id).select().single()
-
-  if (error) throw new Error(error.message)
-  return budget
+  apiClient.setToken(token)
+  return apiClient.patch(`/api/budgets/${id}`, updates)
 }
 
 /** 
@@ -61,10 +73,13 @@ export async function updateBudget(id: string, updates: Partial<{
  * @returns Array of budget instances
  */
 export async function getBudgetsByUserId(userId: string) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: budgets, error } = await supabase.from("budgets").select().eq("user_id", userId)
-
-  if (error) throw new Error(error.message)
-  return budgets
+  apiClient.setToken(token)
+  return apiClient.get("/api/budgets/")
 }

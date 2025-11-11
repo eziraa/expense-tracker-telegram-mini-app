@@ -2,7 +2,6 @@
 
 import type React from "react"
 
-import { createClient } from "@/lib/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -21,16 +20,37 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
       })
-      if (error) throw error
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.detail || "Login failed")
+      }
+
+      const data = await response.json()
+
+      // Store token in localStorage
+      localStorage.setItem("auth_token", data.access_token)
+
+      // Set cookie for server-side access
+      await fetch("/api/auth/set-token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: data.access_token }),
+      })
+
       router.push("/dashboard")
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")

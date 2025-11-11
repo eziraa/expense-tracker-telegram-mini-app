@@ -1,17 +1,31 @@
-import { createClient } from "@/lib/server"
+import { cookies } from "next/headers"
+import { apiClient } from "@/lib/api-client"
 import { GoalsContent } from "@/components/goals-content"
+import { redirect } from "next/navigation"
+import { getLoggedInUser } from "@/app/actions/auth"
 
 export default async function GoalsPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
 
-  if (!user) {
-    return null
+  if (!token) {
+    redirect("/auth/login")
   }
 
-  const goalsData = await supabase.from("goals").select("*").eq("user_id", user.id)
+  apiClient.setToken(token)
 
-  return <GoalsContent goals={goalsData.data || []} userId={user.id} />
+  try {
+    const user = await getLoggedInUser()
+    const goals = await apiClient.get("/api/goals/")
+
+    return <GoalsContent goals={goals as any[]} userId={user.id} />
+  } catch (error: any) {
+    // If it's an authentication error, clear token and redirect
+    if (error?.message?.includes("401") || error?.message?.includes("Unauthorized") || error?.message?.includes("Not authenticated")) {
+      cookieStore.delete("auth_token")
+      redirect("/auth/login")
+    }
+    // For other errors, show empty state
+    return <GoalsContent goals={[]} userId="" />
+  }
 }

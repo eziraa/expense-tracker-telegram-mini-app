@@ -1,21 +1,12 @@
-'use client'
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { useAuth } from "@/providers/auth.privider"
-import { Loader2Icon } from "lucide-react"
 
 export default async function Home() {
-  const { user, loading } = useAuth()
+  const token = (await cookies()).get("auth_token")?.value
 
-  if (loading) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center flex-col space-y-4">
-        <Loader2Icon className=" animate-spin text-accent" />
-      </div>
-    )
 
-  }
-
-  if (!user && !loading) {
+  if (!token) {
+    console.log("No auth token found, redirecting to login")
     redirect("/auth/login")
   }
 

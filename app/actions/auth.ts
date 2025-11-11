@@ -1,6 +1,7 @@
 'use server'
-import { createClient } from "@/lib/server";
+import { apiClient } from "@/lib/api-client";
 import { getUserProfiles } from "./profile";
+import { cookies } from "next/headers";
 
 /**
  * 
@@ -9,18 +10,37 @@ import { getUserProfiles } from "./profile";
  */
 
 export async function getLoggedInUser() {
-    const supabase = await createClient()
+    const cookieStore = await cookies()
+    const token = cookieStore.get("auth_token")?.value
 
-    const {
-        data: { user },
-        error
-    } = await supabase.auth.getUser()
-
-    if (error) {
-        throw new Error(error.message)
+    if (!token) {
+        throw new Error("Not authenticated")
     }
 
-    const data = await getUserProfiles(user?.id ?? "")
-    return { ...user, profiles: data }
+    // Set token in API client
+    apiClient.setToken(token)
 
+    try {
+        const user = await apiClient.get<{
+            id: string;
+            email: string;
+            is_active: boolean;
+            profile: {
+                id: string;
+                email: string;
+                display_name: string | null;
+                currency: string;
+            } | null;
+        }>("/api/auth/me")
+
+        const profileData = user.profile ? [user.profile] : []
+        return {
+            id: user.id,
+            email: user.email,
+            profiles: profileData
+        }
+    } catch (error) {
+        console.log(error)
+        throw new Error(error instanceof Error ? error.message : "Failed to get user")
+    }
 }

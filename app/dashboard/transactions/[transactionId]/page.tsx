@@ -1,28 +1,44 @@
-import { createClient } from "@/lib/server"
+import { cookies } from "next/headers"
+import { apiClient } from "@/lib/api-client"
 import { EditTransactionContent } from "@/components/edit-transaction-content"
+import { redirect } from "next/navigation"
+import { getLoggedInUser } from "@/app/actions/auth"
 
 
 export default async function EditTransactionPage({ params }: { params: Promise<{ transactionId: string }> }) {
-    const supabase = await createClient()
+    const cookieStore = await cookies()
+    const token = cookieStore.get("auth_token")?.value
     const { transactionId } = await params
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
 
-    if (!user) {
-        return null
+    if (!token) {
+        redirect("/auth/login")
     }
 
-    console.log(transactionId)
-    const [accountsData, categoriesData, transactionData] = await Promise.all([
-        supabase.from("accounts").select("*").eq("user_id", user.id),
-        supabase.from("categories").select("*").eq("user_id", user.id),
-        supabase.from("transactions").select("*").eq("id", transactionId).single(),
-    ])
+    apiClient.setToken(token)
 
-    console.log(transactionData)
+    try {
+        const user = await getLoggedInUser()
+        const [accounts, categories, transaction] = await Promise.all([
+            apiClient.get("/api/accounts/"),
+            apiClient.get("/api/categories/"),
+            apiClient.get(`/api/transactions/${transactionId}`),
+        ])
 
-    return (
-        <EditTransactionContent transaction={transactionData.data} accounts={accountsData.data || []} categories={categoriesData.data || []} userId={user.id} />
-    )
+        return (
+            <EditTransactionContent 
+                transaction={transaction as any} 
+                accounts={accounts as any[]} 
+                categories={categories as any[]} 
+                userId={user.id} 
+            />
+        )
+    } catch (error: any) {
+        // If it's an authentication error, clear token and redirect
+        if (error?.message?.includes("401") || error?.message?.includes("Unauthorized") || error?.message?.includes("Not authenticated")) {
+            cookieStore.delete("auth_token")
+            redirect("/auth/login")
+        }
+        // For other errors, redirect to transactions list
+        redirect("/dashboard/transactions")
+    }
 }

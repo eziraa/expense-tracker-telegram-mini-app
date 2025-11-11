@@ -1,39 +1,29 @@
-import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  const token = request.cookies.get("auth_token")?.value
+  const pathname = request.nextUrl.pathname
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options))
-        },
-      },
-    },
-  )
+  // Allow access to auth pages and root without token
+  const isAuthPage = pathname.startsWith("/auth")
+  const isRoot = pathname === "/"
+  const isPublicAsset = pathname.startsWith("/_next") || 
+                        pathname.startsWith("/api/") ||
+                        pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp)$/)
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user && !request.nextUrl.pathname.startsWith("/auth") && request.nextUrl.pathname !== "/") {
+  // If no token and trying to access protected route, redirect to login
+  if (!token && !isAuthPage && !isRoot && !isPublicAsset) {
     const url = request.nextUrl.clone()
     url.pathname = "/auth/login"
     return NextResponse.redirect(url)
   }
 
-  return supabaseResponse
+  // If has token and on auth page (except callback), redirect to dashboard
+  if (token && isAuthPage && pathname !== "/auth/callback" && pathname !== "/auth/sign-up-success") {
+    const url = request.nextUrl.clone()
+    url.pathname = "/dashboard"
+    return NextResponse.redirect(url)
+  }
+
+  return NextResponse.next()
 }

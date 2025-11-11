@@ -8,6 +8,7 @@ import { Toaster } from "sonner"
 import localFont from "next/font/local";
 import { cn } from "@/lib/utils"
 import { AuthProvider } from "@/providers/auth.privider"
+// import { AuthProvider } from "@/providers/auth.privider"
 
 
 const avenirLTPro = localFont({
@@ -86,6 +87,7 @@ export default function RootLayout({
         `font-sans antialiased`
         , avenirLTPro.variable
       )}>
+
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <Toaster position="top-right" />

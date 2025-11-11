@@ -1,17 +1,31 @@
-import { createClient } from "@/lib/server"
+import { cookies } from "next/headers"
+import { apiClient } from "@/lib/api-client"
 import { SettingsContent } from "@/components/settings-content"
+import { redirect } from "next/navigation"
+import { getLoggedInUser } from "@/app/actions/auth"
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
 
-  if (!user) {
-    return null
+  if (!token) {
+    redirect("/auth/login")
   }
 
-  const profileData = await supabase.from("profiles").select("*").eq("id", user.id).single()
+  apiClient.setToken(token)
 
-  return <SettingsContent profile={profileData.data} userId={user.id} />
+  try {
+    const user = await getLoggedInUser()
+    const profile = await apiClient.get("/api/profile/")
+
+    return <SettingsContent profile={profile as any} userId={user.id} />
+  } catch (error: any) {
+    // If it's an authentication error, clear token and redirect
+    if (error?.message?.includes("401") || error?.message?.includes("Unauthorized") || error?.message?.includes("Not authenticated")) {
+      cookieStore.delete("auth_token")
+      redirect("/auth/login")
+    }
+    // For other errors, show empty state
+    return <SettingsContent profile={null} userId="" />
+  }
 }

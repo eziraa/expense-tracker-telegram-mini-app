@@ -4,8 +4,7 @@ import { Moon, Sun, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
 import Image from "next/image"
-import { useState } from "react"
-import { createClient } from "@/lib/client"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 export function Header() {
@@ -16,13 +15,14 @@ export function Header() {
 
   const handleLogout = async () => {
     setIsLoading(true)
-    const supabase = createClient()
-    await supabase.auth.signOut()
     router.push("/auth/login")
   }
 
-  if (!mounted) {
+  useEffect(() => {
     setMounted(true)
+  }, [])
+
+  if (!mounted) {
     return null
   }
 

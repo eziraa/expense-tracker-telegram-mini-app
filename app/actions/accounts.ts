@@ -1,6 +1,7 @@
 "use server"
 
-import { createClient } from "@/lib/server"
+import { apiClient } from "@/lib/api-client"
+import { cookies } from "next/headers"
 
 /**
  *  
@@ -16,12 +17,17 @@ export async function createAccount(data: {
   balance: number
   currency: string
 }) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: account, error } = await supabase.from("accounts").insert([data]).select().single()
+  apiClient.setToken(token)
 
-  if (error) throw new Error(error.message)
-  return account
+  const { user_id, ...accountData } = data
+  return apiClient.post("/api/accounts/", accountData)
 }
 
 /** 
@@ -30,11 +36,15 @@ export async function createAccount(data: {
  * @param id: Account ID
  */
 export async function deleteAccount(id: string) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { error } = await supabase.from("accounts").delete().eq("id", id)
-
-  if (error) throw new Error(error.message)
+  apiClient.setToken(token)
+  await apiClient.delete(`/api/accounts/${id}`)
 }
 
 /**
@@ -49,12 +59,15 @@ export async function updateAccount(id: string, updates: Partial<{
   balance: number
   currency: string
 }>) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: account, error } = await supabase.from("accounts").update(updates).eq("id", id).select().single()
-
-  if (error) throw new Error(error.message)
-  return account
+  apiClient.setToken(token)
+  return apiClient.patch(`/api/accounts/${id}`, updates)
 }
 
 /**
@@ -64,10 +77,13 @@ export async function updateAccount(id: string, updates: Partial<{
  * @returns Array of account instances
  */
 export async function getAccountsByUserId(userId: string) {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
+  
+  if (!token) {
+    throw new Error("Not authenticated")
+  }
 
-  const { data: accounts, error } = await supabase.from("accounts").select().eq("user_id", userId)
-
-  if (error) throw new Error(error.message)
-  return accounts
+  apiClient.setToken(token)
+  return apiClient.get("/api/accounts/")
 }

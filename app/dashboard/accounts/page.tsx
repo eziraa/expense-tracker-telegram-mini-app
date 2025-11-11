@@ -1,17 +1,31 @@
-import { createClient } from "@/lib/server"
+import { cookies } from "next/headers"
+import { apiClient } from "@/lib/api-client"
 import { AccountsContent } from "@/components/accounts-content"
+import { redirect } from "next/navigation"
+import { getLoggedInUser } from "@/app/actions/auth"
 
 export default async function AccountsPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const cookieStore = await cookies()
+  const token = cookieStore.get("auth_token")?.value
 
-  if (!user) {
-    return null
+  if (!token) {
+    redirect("/auth/login")
   }
 
-  const accountsData = await supabase.from("accounts").select("*").eq("user_id", user.id)
+  apiClient.setToken(token)
 
-  return <AccountsContent accounts={accountsData.data || []} userId={user.id} />
+  try {
+    const user = await getLoggedInUser()
+    const accounts = await apiClient.get("/api/accounts/")
+
+    return <AccountsContent accounts={accounts as any[]} userId={user.id} />
+  } catch (error: any) {
+    // If it's an authentication error, clear token and redirect
+    if (error?.message?.includes("401") || error?.message?.includes("Unauthorized") || error?.message?.includes("Not authenticated")) {
+      cookieStore.delete("auth_token")
+      redirect("/auth/login")
+    }
+    // For other errors, show empty state
+    return <AccountsContent accounts={[]} userId="" />
+  }
 }

@@ -4,7 +4,7 @@ import { getLoggedInUser } from "@/app/actions/auth";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 type Profile = {
-    display_name: string;
+    display_name: string | null;
     email: string;
     currency: string;
 };
@@ -53,6 +53,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [error, setError] = useState<Error | null>(null);
 
     const load = async () => {
+        // Check if token exists before making API call
+        const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
+        if (!token) {
+            setUser(null);
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -63,17 +71,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } catch (err: any) {
             setError(err);
             setUser(null);
+            // Clear token if auth fails
+            if (err?.message?.includes("401") || err?.message?.includes("Unauthorized") || err?.message?.includes("Not authenticated")) {
+                removeToken();
+            }
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        // initial load on mount
+        // initial load on mount - only once
+        let mounted = true;
         load().catch((e) => {
-            setError(e);
-            setLoading(false);
+            if (mounted) {
+                setError(e);
+                setLoading(false);
+            }
         });
+
+        return () => {
+            mounted = false;
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -82,9 +101,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await load();
     };
 
-    const signOut = () => {
+    const signOut = async () => {
         removeToken();
         setUser(null);
+        // Clear server-side cookie
+        try {
+            await fetch("/api/auth/set-token", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ token: null }),
+            });
+        } catch (e) {
+            // Ignore errors
+        }
     };
 
     const refresh = async () => {
